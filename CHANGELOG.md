@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 (2026-10-18)
+
+- Insomnia design documents (workspaces with an API spec) import like collections instead of
+  failing with "unrecognized file"
+
 ## 0.1.0 (2026-10-18)
 
 First public release.
