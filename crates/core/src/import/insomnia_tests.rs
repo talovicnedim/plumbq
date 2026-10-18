@@ -40,6 +40,20 @@ environments:
     baseUrl: https://notes.test
 "#;
 
+const V5_DESIGN: &str = r#"
+type: spec.insomnia.rest/5.0
+name: Billing API
+collection:
+  - name: List invoices
+    method: GET
+    url: "{{ _.baseUrl }}/invoices"
+spec:
+  contents:
+    openapi: 3.0.0
+    info: { title: Billing, version: "1.0" }
+    paths: {}
+"#;
+
 fn request(item: &ImportedItem) -> &Request {
     match item {
         ImportedItem::Request(request) => request,
@@ -93,6 +107,14 @@ fn v5_yaml_folders_and_base_environment() {
         collection.environments[0].variables["baseUrl"],
         "https://notes.test"
     );
+}
+
+#[test]
+fn v5_design_document_imports_its_requests() {
+    let collection = import::parse(V5_DESIGN).unwrap();
+    assert_eq!(collection.format, ImportFormat::Insomnia);
+    assert_eq!(collection.name, "Billing API");
+    assert_eq!(request(&collection.items[0]).url, "{{baseUrl}}/invoices");
 }
 
 #[test]

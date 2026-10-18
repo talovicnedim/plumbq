@@ -11,7 +11,11 @@ use crate::Result;
 use crate::http_file::{Header, Request};
 
 pub fn detect(doc: &Value) -> bool {
-    text(doc, "_type") == "export" || text(doc, "type").starts_with("collection.insomnia.rest/")
+    let kind = text(doc, "type");
+    // Design documents (`spec.…`) keep their requests in the same `collection` as collections.
+    text(doc, "_type") == "export"
+        || kind.starts_with("collection.insomnia.rest/")
+        || kind.starts_with("spec.insomnia.rest/")
 }
 
 pub fn parse(doc: &Value) -> Result<ImportedCollection> {
