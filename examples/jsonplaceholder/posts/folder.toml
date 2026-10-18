@@ -1,0 +1,1 @@
+order = ["list-posts.http", "get-post.http", "get-post-author.http", "create-post.http", "delete-post.http"]

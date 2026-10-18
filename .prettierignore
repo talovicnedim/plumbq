@@ -1,0 +1,10 @@
+pnpm-lock.yaml
+target/
+node_modules/
+.svelte-kit/
+build/
+LICENSE
+apps/desktop/static/
+apps/desktop/src-tauri/
+apps/desktop/src/lib/api/bindings.ts
+apps/desktop/src/lib/components/ui/

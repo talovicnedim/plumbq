@@ -1,0 +1,58 @@
+[package]
+name = "plumbq-desktop"
+description = "Plumbq desktop app"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+name = "plumbq_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+# Named like the app so macOS shows "Plumbq" in the Dock for dev builds too.
+[[bin]]
+name = "Plumbq"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.7", features = [] }
+
+[dependencies]
+plumbq-assistant.workspace = true
+plumbq-core.workspace = true
+# The MCP server runs inside the app (Settings → AI & MCP).
+plumbq-mcp.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+specta.workspace = true
+specta-typescript = "0.0.12"
+tauri = { version = "2.12", features = [] }
+tokio = { workspace = true, features = ["net"] }
+# Stops the in-app MCP server when it is turned off.
+tokio-util.workspace = true
+# The log plugin's levels (LevelFilter).
+log = "0.4"
+# Core, the MCP server and the chat log with tracing; its `log` feature sends their lines to
+# the log plugin, since the app sets no tracing subscriber.
+tracing = { workspace = true, features = ["log"] }
+# Watches the open workspace so edits from git, editors and agents show up live.
+notify = "8"
+tauri-plugin-dialog = "2"
+tauri-plugin-log = "2.10"
+tauri-plugin-opener = "2.7"
+# Restart after an update is installed.
+tauri-plugin-process = "2.4"
+# Self-updates from GitHub releases; only active in builds with updater config.
+tauri-plugin-updater = "2.13"
+tauri-specta = { version = "=2.0.0-rc.25", features = ["derive", "typescript"] }
+
+[dev-dependencies]
+# A real MCP client over HTTP, to test that settings changes keep AI apps connected.
+rmcp = { workspace = true, features = ["client", "transport-streamable-http-client-reqwest"] }
+
+[lints]
+workspace = true

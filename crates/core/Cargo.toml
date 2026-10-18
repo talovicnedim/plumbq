@@ -1,0 +1,40 @@
+[package]
+name = "plumbq-core"
+description = "Workspace, .http and HTTP logic shared by the desktop app, MCP server and CLI"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+base64 = "0.22"
+keyring = "4"
+p12-keystore = "0.4"
+# Public suffix list: cookies may not be set for `com`, `co.uk` and the like.
+psl = "2"
+# `socks` and `system-proxy`: workspace proxy settings (SOCKS5 URLs, and "" = the OS proxy).
+reqwest = { workspace = true, features = ["http2", "charset", "socks", "system-proxy"] }
+rustls.workspace = true
+serde.workspace = true
+# YAML for OpenAPI, Swagger and Insomnia v5 files; panic-free and maintained (serde_yaml is deprecated).
+serde-saphyr = "1"
+# Keeps object key order, so imports follow the order of the source file.
+serde_json = { workspace = true, features = ["preserve_order"] }
+sha2.workspace = true
+specta.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+toml.workspace = true
+# Rewrites folder.toml without dropping the user's comments or unknown keys.
+toml_edit.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+rcgen = "0.14.10"
+tokio = { workspace = true, features = ["io-util", "net"] }
+
+[lints]
+workspace = true

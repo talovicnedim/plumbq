@@ -1,0 +1,2 @@
+### List users
+GET {{baseUrl}}/users

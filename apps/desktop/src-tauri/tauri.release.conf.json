@@ -1,0 +1,12 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "build": {
+    "beforeBuildCommand": "node ../../scripts/build-sidecars.mjs && pnpm build"
+  },
+  "bundle": {
+    "externalBin": [
+      "binaries/plumbq-mcp",
+      "binaries/plumbq-cli"
+    ]
+  }
+}

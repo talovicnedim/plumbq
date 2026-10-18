@@ -1,0 +1,19 @@
+{
+	"name": "plumbq",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"packageManager": "pnpm@10.34.6",
+	"scripts": {
+		"dev": "pnpm --filter desktop tauri dev",
+		"build": "pnpm --filter desktop tauri build --config src-tauri/tauri.release.conf.json",
+		"check": "cargo fmt --all --check && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace && pnpm --filter desktop check && prettier --check . && pnpm --filter desktop test",
+		"fix": "cargo fmt --all && cargo clippy --workspace --all-targets --fix --allow-dirty --allow-staged && prettier --write .",
+		"sidecars": "node scripts/build-sidecars.mjs"
+	},
+	"devDependencies": {
+		"prettier": "^3.9.10",
+		"prettier-plugin-svelte": "^4.1.1",
+		"prettier-plugin-tailwindcss": "^0.8.1"
+	}
+}

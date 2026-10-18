@@ -1,0 +1,14 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "bundle": {
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZDNzFBNDI0NjE3QjY2NzgKUldSNFpudGhKS1J4L053UCt3UTlSL2ZlbHNxb3NCUE9CU2srK1p0bWNpajFNMklqaVQ0NEZ4ZnoK",
+      "endpoints": [
+        "https://github.com/talovicnedim/plumbq/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}

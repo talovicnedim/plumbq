@@ -1,0 +1,10 @@
+### Create post
+# @assert status == 201
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "title": "Hello from a .http file",
+  "body": "Sent by Plumbq",
+  "userId": 1
+}

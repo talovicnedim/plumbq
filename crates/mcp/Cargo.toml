@@ -1,0 +1,48 @@
+[package]
+name = "plumbq-mcp"
+description = "MCP server that lets AI assistants organize and send the requests in a workspace"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[lib]
+name = "plumbq_mcp"
+path = "src/lib.rs"
+
+[[bin]]
+name = "plumbq-mcp"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+plumbq-core.workspace = true
+# HTTP routing for rmcp's Streamable HTTP service (the SDK's own examples use it).
+axum = { version = "0.8", default-features = false, features = ["http1", "tokio"] }
+# The client side is `--url`: a stdio bridge to the app's HTTP server.
+rmcp = { workspace = true, features = ["server", "client", "transport-io", "macros", "transport-streamable-http-server", "transport-streamable-http-client-reqwest"] }
+schemars = "1"
+specta.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+# `preserve_order` keeps the key order of AI apps' config files we add ourselves to.
+serde_json = { workspace = true, features = ["preserve_order"] }
+tokio = { workspace = true, features = ["io-std", "net"] }
+# Stops the HTTP server when the app turns MCP off.
+tokio-util.workspace = true
+# Shows the root folder.toml's HTTP settings as written.
+toml.workspace = true
+# Adds the server to Codex's config.toml without dropping the user's comments (as core does).
+toml_edit.workspace = true
+tracing.workspace = true
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# Random access tokens; already in the tree via core.
+uuid.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["net"] }
+
+[lints]
+workspace = true

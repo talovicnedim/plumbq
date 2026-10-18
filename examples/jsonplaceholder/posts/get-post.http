@@ -1,0 +1,2 @@
+### Get post
+GET {{baseUrl}}/posts/1

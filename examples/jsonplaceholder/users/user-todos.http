@@ -1,0 +1,3 @@
+### User todos
+GET {{baseUrl}}/users/1/todos
+    ?completed=false

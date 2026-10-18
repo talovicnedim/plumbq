@@ -1,0 +1,5 @@
+# Keep LF everywhere, including Windows checkouts: .http files, formatters and tests expect it.
+* text=auto eol=lf
+*.png binary
+*.icns binary
+*.ico binary

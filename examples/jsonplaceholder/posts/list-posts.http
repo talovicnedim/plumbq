@@ -1,0 +1,3 @@
+### List posts
+# @assert status == 200
+GET {{baseUrl}}/posts?_limit=5

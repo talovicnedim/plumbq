@@ -1,0 +1,146 @@
+name: Release
+
+# Push a tag like `v0.1.0` to build installers for every platform into a draft GitHub release.
+# Signing, notarization and auto-updates are opt-in through secrets; see docs/RELEASING.md.
+# Without them the builds still succeed, unsigned and without updater artifacts.
+on:
+  push:
+    tags: ['v*']
+
+# Actions are pinned to commit SHAs because this workflow can write releases.
+permissions:
+  contents: write
+
+jobs:
+  # The release is named after the tag, but the app and its update check use the version in the
+  # code, so the two must match.
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check the tag matches the app version
+        run: |
+          app=$(jq -r .version apps/desktop/src-tauri/tauri.conf.json)
+          crate=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name == "plumbq-desktop") | .version')
+          if [ "v$app" != "$GITHUB_REF_NAME" ] || [ "$crate" != "$app" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME, tauri.conf.json ($app) and Cargo.toml ($crate) must all have the same version."
+            exit 1
+          fi
+
+  build:
+    needs: version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: universal-apple-darwin
+            args: --target universal-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            args: ''
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            args: ''
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          # Keep what a failed build compiled, so a retry doesn't start from scratch.
+          cache-on-failure: true
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # Only secrets that are actually set are exported: an empty APPLE_CERTIFICATE would make
+      # the bundler try (and fail) to sign. Values go through $GITHUB_ENV with a delimiter so
+      # multi-line keys survive.
+      - name: Load optional signing secrets
+        shell: bash
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Tauri reads the update key only from these env names; the secrets are named after the app.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.PLUMBQ_UPDATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.PLUMBQ_UPDATE_KEY_PASSWORD }}
+        run: |
+          for name in APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_SIGNING_IDENTITY \
+                      APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID \
+                      TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD; do
+            if [ -n "${!name}" ]; then
+              { echo "$name<<__SECRET__"; echo "${!name}"; echo "__SECRET__"; } >> "$GITHUB_ENV"
+            fi
+          done
+
+      # Updater artifacts need the private key, and the app needs the matching public key.
+      - name: Enable auto-updates when configured
+        id: updater
+        shell: bash
+        run: |
+          config=apps/desktop/src-tauri/tauri.updater.conf.json
+          if [ -n "${TAURI_SIGNING_PRIVATE_KEY:-}" ] && ! grep -q REPLACE_WITH "$config"; then
+            echo "args=--config src-tauri/tauri.updater.conf.json" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Auto-updates are off for this build (no PLUMBQ_UPDATE_KEY secret or no public key in $config)."
+          fi
+
+      # Windows code signing: set WINDOWS_CERTIFICATE (base64 .pfx) and WINDOWS_CERTIFICATE_PASSWORD.
+      # The thumbprint is read from the imported certificate and passed to the bundler.
+      - name: Import Windows signing certificate
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          if (-not $env:WINDOWS_CERTIFICATE) { Write-Host "No Windows certificate: building unsigned."; exit 0 }
+          $path = Join-Path $env:RUNNER_TEMP "certificate.pfx"
+          [IO.File]::WriteAllBytes($path, [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE))
+          $password = ConvertTo-SecureString $env:WINDOWS_CERTIFICATE_PASSWORD -AsPlainText -Force
+          $cert = Import-PfxCertificate -FilePath $path -CertStoreLocation Cert:\CurrentUser\My -Password $password
+          Remove-Item $path
+          $config = @{ bundle = @{ windows = @{ certificateThumbprint = $cert.Thumbprint; digestAlgorithm = "sha256"; timestampUrl = "http://timestamp.digicert.com" } } } | ConvertTo-Json -Depth 5 -Compress
+          Set-Content -Path apps/desktop/src-tauri/tauri.windows-signing.conf.json -Value $config
+          "WINDOWS_SIGNING_ARGS=--config src-tauri/tauri.windows-signing.conf.json" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      # The MCP server and CLI ship inside the app as Tauri sidecars. Built explicitly for the
+      # matrix target so the universal macOS build gets universal (lipo) binaries. When macOS
+      # signing is configured, Tauri signs these external binaries along with the app.
+      - name: Build sidecars
+        run: node scripts/build-sidecars.mjs --target ${{ matrix.target }}
+
+      - uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Sidecars were built in the previous step.
+          SKIP_SIDECAR_BUILD: '1'
+        with:
+          projectPath: apps/desktop
+          tagName: ${{ github.ref_name }}
+          releaseName: Plumbq ${{ github.ref_name }}
+          releaseBody: See the assets below to download Plumbq for your platform.
+          # Draft until you've checked the builds; publishing makes it "latest" for the updater.
+          releaseDraft: true
+          prerelease: false
+          includeUpdaterJson: ${{ steps.updater.outputs.args != '' }}
+          args: --config src-tauri/tauri.release.conf.json ${{ steps.updater.outputs.args }} ${{ env.WINDOWS_SIGNING_ARGS }} ${{ matrix.args }}

@@ -1,0 +1,31 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead? Screenshots help.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: App version
+      description: Menu → About
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: OS
+      placeholder: macOS 15.4 (Apple Silicon), Ubuntu 24.04, Windows 11, …
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Sample request
+      description: If it's about a request or an import, a minimal `.http` file or export that shows the problem.
+      render: http
+  - type: textarea
+    attributes:
+      label: Anything else?
+      description: Please remove tokens, passwords, hostnames or anything else you don't want to share.

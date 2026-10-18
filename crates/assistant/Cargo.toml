@@ -1,0 +1,35 @@
+[package]
+name = "plumbq-assistant"
+description = "The built-in AI assistant: chat providers and an agent loop over the app's own MCP tools"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+plumbq-core.workspace = true
+# The agent uses the MCP server's tools, permissions and approvals in-process.
+plumbq-mcp.workspace = true
+# Streams provider responses (SSE); already in the tree via reqwest.
+futures-util = "0.3"
+reqwest = { workspace = true, features = ["http2", "stream"] }
+rmcp = { workspace = true, features = ["client"] }
+serde.workspace = true
+# Stable folder names for chats per workspace; already in the tree via core.
+sha2.workspace = true
+serde_json.workspace = true
+specta.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["io-util"] }
+# Stop: cancels the provider request and the pending tool call. Already in the tree via mcp.
+tokio-util.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["io-util", "net"] }
+
+[lints]
+workspace = true

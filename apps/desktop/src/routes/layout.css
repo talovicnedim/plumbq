@@ -1,0 +1,281 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn-svelte/tailwind.css';
+@import '@fontsource-variable/inter';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+	--background: oklch(1 0 0);
+	--foreground: oklch(0.145 0 0);
+	--card: oklch(1 0 0);
+	--card-foreground: oklch(0.145 0 0);
+	--popover: oklch(1 0 0);
+	--popover-foreground: oklch(0.145 0 0);
+	--primary: oklch(0.52 0.094 223.1);
+	--primary-foreground: oklch(0.985 0 0);
+	--secondary: oklch(0.97 0 0);
+	--secondary-foreground: oklch(0.205 0 0);
+	--muted: oklch(0.97 0 0);
+	--muted-foreground: oklch(0.556 0 0);
+	--accent: oklch(0.97 0 0);
+	--accent-foreground: oklch(0.205 0 0);
+	--destructive: oklch(0.577 0.245 27.325);
+	--border: oklch(0.922 0 0);
+	--input: oklch(0.922 0 0);
+	--ring: oklch(0.52 0.094 223.1);
+	--chart-1: oklch(0.87 0 0);
+	--chart-2: oklch(0.556 0 0);
+	--chart-3: oklch(0.439 0 0);
+	--chart-4: oklch(0.371 0 0);
+	--chart-5: oklch(0.269 0 0);
+	--radius: 0.625rem;
+	--sidebar: oklch(0.975 0.003 275);
+	--sidebar-foreground: oklch(0.145 0 0);
+	--sidebar-primary: oklch(0.205 0 0);
+	--sidebar-primary-foreground: oklch(0.985 0 0);
+	--sidebar-accent: oklch(0.97 0 0);
+	--sidebar-accent-foreground: oklch(0.205 0 0);
+	--sidebar-border: oklch(0.922 0 0);
+	--sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+	--background: oklch(0.17 0.005 275);
+	--foreground: oklch(0.985 0 0);
+	--card: oklch(0.21 0.006 275);
+	--card-foreground: oklch(0.985 0 0);
+	--popover: oklch(0.22 0.006 275);
+	--popover-foreground: oklch(0.985 0 0);
+	--primary: oklch(0.797 0.134 211.5);
+	--primary-foreground: oklch(0.145 0 0);
+	--secondary: oklch(0.269 0 0);
+	--secondary-foreground: oklch(0.985 0 0);
+	--muted: oklch(0.26 0.008 275);
+	--muted-foreground: oklch(0.7 0.01 275);
+	--accent: oklch(0.27 0.01 275);
+	--accent-foreground: oklch(0.985 0 0);
+	--destructive: oklch(0.704 0.191 22.216);
+	--border: oklch(1 0 0 / 10%);
+	--input: oklch(1 0 0 / 15%);
+	--ring: oklch(0.797 0.134 211.5);
+	--chart-1: oklch(0.87 0 0);
+	--chart-2: oklch(0.556 0 0);
+	--chart-3: oklch(0.439 0 0);
+	--chart-4: oklch(0.371 0 0);
+	--chart-5: oklch(0.269 0 0);
+	--sidebar: oklch(0.15 0.005 275);
+	--sidebar-foreground: oklch(0.985 0 0);
+	--sidebar-primary: oklch(0.797 0.134 211.5);
+	--sidebar-primary-foreground: oklch(0.145 0 0);
+	--sidebar-accent: oklch(0.269 0 0);
+	--sidebar-accent-foreground: oklch(0.985 0 0);
+	--sidebar-border: oklch(1 0 0 / 10%);
+	--sidebar-ring: oklch(0.556 0 0);
+}
+
+@theme inline {
+	--font-sans: 'Inter Variable', sans-serif;
+	--color-sidebar-ring: var(--sidebar-ring);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar: var(--sidebar);
+	--color-chart-5: var(--chart-5);
+	--color-chart-4: var(--chart-4);
+	--color-chart-3: var(--chart-3);
+	--color-chart-2: var(--chart-2);
+	--color-chart-1: var(--chart-1);
+	--color-ring: var(--ring);
+	--color-input: var(--input);
+	--color-border: var(--border);
+	--color-destructive: var(--destructive);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-accent: var(--accent);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-muted: var(--muted);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-secondary: var(--secondary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-primary: var(--primary);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-popover: var(--popover);
+	--color-card-foreground: var(--card-foreground);
+	--color-card: var(--card);
+	--color-foreground: var(--foreground);
+	--color-background: var(--background);
+	--radius-sm: calc(var(--radius) * 0.6);
+	--radius-md: calc(var(--radius) * 0.8);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) * 1.4);
+	--radius-2xl: calc(var(--radius) * 1.8);
+	--radius-3xl: calc(var(--radius) * 2.2);
+	--radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-background text-foreground;
+	}
+	html {
+		@apply font-sans;
+	}
+}
+
+/* Environment colors: the strongest visual signal of where a request is going. */
+:root {
+	--env-production: oklch(0.62 0.22 25);
+	--env-staging: oklch(0.76 0.16 70);
+	--env-development: oklch(0.62 0.17 255);
+	--env-local: oklch(0.68 0.16 150);
+}
+
+/* AI provider badges: two letters on the provider's own colors, the same in light and dark. */
+:root {
+	--provider-ollama: oklch(0.439 0 0);
+	--provider-ollama-deep: oklch(0.205 0 0);
+	--provider-lm-studio: oklch(0.673 0.182 276.935);
+	--provider-lm-studio-deep: oklch(0.457 0.24 277.023);
+	--provider-anthropic: oklch(0.75 0.183 55.934);
+	--provider-anthropic-deep: oklch(0.553 0.195 38.402);
+	--provider-openai: oklch(0.696 0.17 162.48);
+	--provider-openai-deep: oklch(0.508 0.118 165.612);
+	--provider-gemini: oklch(0.707 0.165 254.624);
+	--provider-gemini-deep: oklch(0.606 0.25 292.717);
+	--provider-custom: oklch(0.704 0.04 256.788);
+	--provider-custom-deep: oklch(0.446 0.043 257.281);
+}
+
+@theme inline {
+	--color-provider-ollama: var(--provider-ollama);
+	--color-provider-ollama-deep: var(--provider-ollama-deep);
+	--color-provider-lm-studio: var(--provider-lm-studio);
+	--color-provider-lm-studio-deep: var(--provider-lm-studio-deep);
+	--color-provider-anthropic: var(--provider-anthropic);
+	--color-provider-anthropic-deep: var(--provider-anthropic-deep);
+	--color-provider-openai: var(--provider-openai);
+	--color-provider-openai-deep: var(--provider-openai-deep);
+	--color-provider-gemini: var(--provider-gemini);
+	--color-provider-gemini-deep: var(--provider-gemini-deep);
+	--color-provider-custom: var(--provider-custom);
+	--color-provider-custom-deep: var(--provider-custom-deep);
+}
+
+/* Result colors: passed / changed / failed, and the two extra HTTP method hues. Light values are
+   dark enough for 11px method labels: at least 4.5:1 on the sidebar. */
+:root {
+	--success: oklch(0.52 0.145 163.2);
+	--warning: oklch(0.55 0.125 70);
+	--danger: oklch(0.565 0.245 27.3);
+	--info: oklch(0.536 0.158 241.97);
+	--special: oklch(0.541 0.281 293.01);
+}
+
+.dark {
+	--success: oklch(0.765 0.177 163.2);
+	--warning: oklch(0.828 0.189 84.4);
+	--danger: oklch(0.704 0.191 22.2);
+	--info: oklch(0.746 0.16 232.66);
+	--special: oklch(0.702 0.183 293.54);
+}
+
+@theme inline {
+	--color-success: var(--success);
+	--color-warning: var(--warning);
+	--color-danger: var(--danger);
+	--color-info: var(--info);
+	--color-special: var(--special);
+	--color-env-production: var(--env-production);
+	--color-env-staging: var(--env-staging);
+	--color-env-development: var(--env-development);
+	--color-env-local: var(--env-local);
+}
+
+html,
+body {
+	@apply h-full overflow-hidden select-none;
+}
+
+/* Code and URLs: one monospace stack everywhere. */
+@theme inline {
+	--font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+}
+
+/* CodeMirror follows the app theme. */
+.cm-editor {
+	background: transparent;
+	font-family: var(--font-mono);
+}
+.cm-editor .cm-gutters {
+	background: transparent;
+	border-right: 1px solid var(--border);
+	color: var(--muted-foreground);
+}
+.cm-editor .cm-activeLine,
+.cm-editor .cm-activeLineGutter {
+	background: color-mix(in oklch, var(--muted) 50%, transparent);
+}
+.cm-editor.cm-focused {
+	outline: none;
+}
+.dark .cm-editor {
+	color: var(--foreground);
+}
+.dark .cm-editor .cm-cursor {
+	border-left-color: var(--foreground);
+}
+.dark .cm-editor .cm-selectionBackground,
+.dark .cm-editor.cm-focused .cm-selectionBackground {
+	background: color-mix(in oklch, var(--primary) 35%, transparent);
+}
+
+/* Code colors. CodeMirror's own palette is made for light backgrounds, so the editors use
+   `classHighlighter` and these tokens: at least 4.5:1 in both themes. */
+:root {
+	--syntax-key: oklch(0.42 0.09 240);
+	--syntax-string: oklch(0.5 0.13 155);
+	--syntax-number: oklch(0.55 0.125 70);
+	--syntax-literal: oklch(0.5 0.2 300);
+}
+.dark {
+	--syntax-key: oklch(0.85 0.06 230);
+	--syntax-string: oklch(0.82 0.14 155);
+	--syntax-number: oklch(0.84 0.13 80);
+	--syntax-literal: oklch(0.78 0.14 300);
+}
+.cm-editor .tok-propertyName {
+	color: var(--syntax-key);
+}
+.cm-editor .tok-string {
+	color: var(--syntax-string);
+}
+.cm-editor .tok-number {
+	color: var(--syntax-number);
+}
+.cm-editor .tok-bool,
+.cm-editor .tok-literal {
+	color: var(--syntax-literal);
+}
+.cm-editor .tok-punctuation {
+	color: var(--muted-foreground);
+}
+.cm-editor .tok-invalid {
+	color: var(--danger);
+}
+/* The diff view's "N unchanged lines" bar. Three classes, to win over the merge package's
+   light-only style. */
+.cm-mergeView .cm-editor .cm-collapsedLines {
+	background: var(--muted);
+	color: var(--muted-foreground);
+}
+
+/* Compact density: everything is sized in rem, so a smaller root font tightens the whole UI. */
+html[data-density='compact'] {
+	font-size: 14px;
+}

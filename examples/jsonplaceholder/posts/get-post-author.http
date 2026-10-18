@@ -1,0 +1,4 @@
+### Get post author
+# Uses the userId from the last "Get post" response: send that one first.
+# @assert status == 200
+GET {{baseUrl}}/users/{{get-post.response.body.$.userId}}

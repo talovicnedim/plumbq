@@ -1,0 +1,2 @@
+### Delete post
+DELETE {{baseUrl}}/posts/1
